@@ -9,7 +9,7 @@
 
 
     //listen to any incoming messages from background
-    chrome.runtime.onMessage.addListner((obj, sender, response) => {
+    chrome.runtime.onMessage.addListener((obj, sender, response) => {
 
         const { type, value, videoId } = obj;
         if (type === "NEW") {
