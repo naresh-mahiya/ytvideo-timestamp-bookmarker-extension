@@ -16,12 +16,15 @@
             currentVideo = videoId;
             newVideoLoaded();
         }
-        else if(type="PLAY"){
+        else if(type === "PLAY"){
             youtubePlayer.currentTime=value;
-        } else if(type="DELETE"){
-            currentVideoBookmarks=currentVideoBookmarks.filter((b)=>b.time!=value);
-            chrome.sync.storage.set({[currentVideo]:JSON.stringify(currentVideoBookmarks)});
-            response(currentVideoBookmarks)//sent back the updated things to popup
+        } else if(type === "DELETE"){
+            currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
+            chrome.storage.sync.set({[currentVideo]: JSON.stringify(currentVideoBookmarks)}, () => {
+                // Send back the updated bookmarks list
+                response(currentVideoBookmarks);
+            });
+            return true; // Keep the message channel open for the async response
         }
     });
 

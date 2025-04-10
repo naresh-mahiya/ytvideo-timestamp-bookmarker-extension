@@ -1,4 +1,4 @@
-export async function getActiveTabURL() {
+export async function getActiveTab() {
     let queryOptions = { active: true, currentWindow: true };
     // tabs that are active and belong to the current window.
     let [tab] = await chrome.tabs.query(queryOptions);//returns array of matching tabs...

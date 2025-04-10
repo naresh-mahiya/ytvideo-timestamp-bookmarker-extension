@@ -1,4 +1,4 @@
-import { getActiveTabURL } from './utils.js'
+import { getActiveTab } from './utils.js'
 
 //this is called in view booksmarks
 const addNewBookmark = (bookmarksElement, bookmark) => {
@@ -16,7 +16,7 @@ const addNewBookmark = (bookmarksElement, bookmark) => {
     newBookmarkElement.setAttribute("timestamp", bookmark.time);
 
     setBookmarkAttributes("play", onPlay, controlsElement);
-    setBookmarkAttributes("delete",ondelete,controlsElement)
+    setBookmarkAttributes("delete",onDelete,controlsElement)
 
     newBookmarkElement.appendChild(bookmarkTitleElement);
     newBookmarkElement.appendChild(controlsElement);
@@ -41,7 +41,7 @@ const viewBookmarks = (currentBookmarks = []) => {
 //on play
 const onPlay=async (e)=>{
     const bookmarkTime=e.target.parentNode.parentNode.getAttribute("timestamp");
-    const activeTab=await getActiveTabURL();
+    const activeTab=await getActiveTab();
 
     chrome.tabs.sendMessage(activeTab.id,{
         type:"PLAY",
@@ -51,17 +51,18 @@ const onPlay=async (e)=>{
 
 
 //on delete
-const onDelete=async (e)=>{
-    const activeTab=await getActiveTabURL();
-    const bookmarkTime= e.target.parentNode.parentNode.getAttribute("timestamp");
-    const bookmarkElementToDelete=document.getElementById("bookmark-"+bookmarkTime);
-
-    bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
-      
-    chrome.tabs.sendMessage(activeTab.id,{
-        type:"DELETE",
-        value:bookmarkTime
-    },viewBookmarks);
+const onDelete = async (e) => {
+    const activeTab = await getActiveTab();
+    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+    
+    // Send message to content script to delete the bookmark
+    chrome.tabs.sendMessage(activeTab.id, {
+        type: "DELETE",
+        value: bookmarkTime
+    }, (updatedBookmarks) => {
+        // Update the view with the new bookmarks list
+        viewBookmarks(updatedBookmarks);
+    });
 }
 
 
@@ -76,7 +77,7 @@ const setBookmarkAttributes = (src, eventListner, controlParentElement) => {
 
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const activeTab = await getActiveTabURL();
+    const activeTab = await getActiveTab();
     const queryParameters = activeTab.url.split("?")[1];
     const urlParameters = new URLSearchParams(queryParameters);
     const currentVideo = urlParameters.get("v"); //get Returns the first value associated to the given search parameter
