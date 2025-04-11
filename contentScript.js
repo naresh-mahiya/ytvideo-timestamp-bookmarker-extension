@@ -46,28 +46,25 @@
     const newVideoLoaded = async () => {
         currentVideoBookmarks = await fetchBookmarks();
 
-        const oldBtn = document.getElementsByClassName("bookmark-btn")[0];
-        if (oldBtn) oldBtn.remove();
+        const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
+        if (!bookmarkBtnExists) {
 
-        const bookmarkBtn = document.createElement("img");//like div,p,span...create img tag element
-        bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
-        bookmarkBtn.className = "ytp-button" + "bookmark-btn";
-        bookmarkBtn.title = "click to bookmark current timestamp";
+            const bookmarkBtn = document.createElement("img");//like div,p,span...create img tag element
+            bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
+            bookmarkBtn.className = "ytp-button bookmark-btn";
+            bookmarkBtn.title = "click to bookmark current timestamp";
 
-        //now take access of youtube video controles
-        youtubeLeftControles = document.getElementsByClassName("ytp-left-controls")[0];
-        youtubePlayer = document.getElementsByClassName("video-stream")[0];
+            //now take access of youtube video controles
+            youtubeLeftControles = document.getElementsByClassName("ytp-left-controls")[0];
+            youtubePlayer = document.getElementsByClassName("video-stream")[0];
 
-        //add that bookmark button
-        youtubeLeftControles.appendChild(bookmarkBtn);
-        bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+            //add that bookmark button
+            youtubeLeftControles.appendChild(bookmarkBtn);
+            bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
 
 
-
+        }
     }
-
-    // newVideoLoaded(); //it prevent us from edge case like  when page is refreshed ....
-    // only problem is this will cause the function to be executed twice but will be handled in if(!bookmarkBtn Exists)
 
     const addNewBookmarkEventHandler = async () => {
         const currentTime = youtubePlayer.currentTime;
@@ -81,6 +78,8 @@
             [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
         });
     }
+
+    newVideoLoaded();
 })();
 
 const getTime = t => {

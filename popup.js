@@ -54,7 +54,11 @@ const onPlay=async (e)=>{
 const onDelete = async (e) => {
     const activeTab = await getActiveTab();
     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-    
+     
+    //try these from github clone repo
+    // const elementToDelete = document.getElementById("bookmark-" + bookmarkTime);
+    // elementToDelete.parentNode.removeChild(elementToDelete);
+
     // Send message to content script to delete the bookmark
     chrome.tabs.sendMessage(activeTab.id, {
         type: "DELETE",
@@ -94,6 +98,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         //not a youtube video page
         const container = document.getElementsByClassName("container")[0]
         container.innerHTML = '<div class="title">This is not a youtube video page</div>'
+    }
+
+    // If user is on YT but now watching a video
+    if(activeTab.url.includes("youtube.com/") && !activeTab.url.includes("/watch")){
+        popupTitle.textContent = 'Great!';
+        bookmarks.innerHTML = '<i class=row id="noBookmarks">You are on YouTube. <br> Start watching a video to save your bookmarks!</i>';
     }
 
 })
