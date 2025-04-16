@@ -19,9 +19,10 @@
         else if (type === "PLAY") {
             youtubePlayer.currentTime = value;
         } else if (type === "DELETE") {
-            currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
-            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) }, () => {
-                // Send back the updated bookmarks list
+            // Convert both values to numbers for proper comparison
+            const timeToDelete = Number(value);
+            currentVideoBookmarks = currentVideoBookmarks.filter((b) => Number(b.time) !== timeToDelete);
+            chrome.storage.sync.set({[currentVideo]: JSON.stringify(currentVideoBookmarks)}, () => {
                 response(currentVideoBookmarks);
             });
             return true; // Keep the message channel open for the async response

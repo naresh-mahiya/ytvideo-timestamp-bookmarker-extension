@@ -16,7 +16,7 @@ const addNewBookmark = (bookmarksElement, bookmark) => {
     newBookmarkElement.setAttribute("timestamp", bookmark.time);
 
     setBookmarkAttributes("play", onPlay, controlsElement);
-    setBookmarkAttributes("delete",onDelete,controlsElement)
+    setBookmarkAttributes("delete", onDelete, controlsElement)
 
     newBookmarkElement.appendChild(bookmarkTitleElement);
     newBookmarkElement.appendChild(controlsElement);
@@ -39,13 +39,13 @@ const viewBookmarks = (currentBookmarks = []) => {
 }
 
 //on play
-const onPlay=async (e)=>{
-    const bookmarkTime=e.target.parentNode.parentNode.getAttribute("timestamp");
-    const activeTab=await getActiveTab();
+const onPlay = async (e) => {
+    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+    const activeTab = await getActiveTab();
 
-    chrome.tabs.sendMessage(activeTab.id,{
-        type:"PLAY",
-        value:bookmarkTime
+    chrome.tabs.sendMessage(activeTab.id, {
+        type: "PLAY",
+        value: bookmarkTime
     })
 }
 
@@ -54,7 +54,7 @@ const onPlay=async (e)=>{
 const onDelete = async (e) => {
     const activeTab = await getActiveTab();
     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-     
+
     //try these from github clone repo
     // const elementToDelete = document.getElementById("bookmark-" + bookmarkTime);
     // elementToDelete.parentNode.removeChild(elementToDelete);
@@ -65,7 +65,10 @@ const onDelete = async (e) => {
         value: bookmarkTime
     }, (updatedBookmarks) => {
         // Update the view with the new bookmarks list
-        viewBookmarks(updatedBookmarks);
+        requestAnimationFrame(() => {
+            viewBookmarks(updatedBookmarks);
+
+        })
     });
 }
 
@@ -101,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // If user is on YT but now watching a video
-    if(activeTab.url.includes("youtube.com/") && !activeTab.url.includes("/watch")){
+    if (activeTab.url.includes("youtube.com/") && !activeTab.url.includes("/watch")) {
         popupTitle.textContent = 'Great!';
         bookmarks.innerHTML = '<i class=row id="noBookmarks">You are on YouTube. <br> Start watching a video to save your bookmarks!</i>';
     }
