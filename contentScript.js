@@ -72,10 +72,31 @@
         const currentTime = youtubePlayer.currentTime;
         currentVideoBookmarks = await fetchBookmarks(); // to make sure using latest bookmarks
 
+        // const newBookmark = {
+        //     time: currentTime,
+        //     desc: "Bookmark at" + getTime(currentTime)
+        // };
+
+        //customize the description
+        const userDesc = prompt("Enter description for this timestamp bookmark:", "Bookmark at " + getTime(currentTime));
+        if (userDesc === null) return; // if user cancelled
+        let finalDesc = "";
+
+        if (userDesc.trim() === "") {
+            finalDesc = "Bookmark at " + getTime(currentTime);
+        } else if (userDesc.includes("at " + getTime(currentTime))) {
+            finalDesc = userDesc.trim();
+        } else {
+            finalDesc = `${userDesc.trim()} at ${getTime(currentTime)}`;
+        }
+
         const newBookmark = {
             time: currentTime,
-            desc: "Bookmark at" + getTime(currentTime)
+            desc: finalDesc
         };
+
+
+
         chrome.storage.sync.set({
             [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
         });
