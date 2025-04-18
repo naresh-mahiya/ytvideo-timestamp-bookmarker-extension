@@ -15,8 +15,21 @@ const addNewBookmark = (bookmarksElement, bookmark) => {
     newBookmarkElement.className = "bookmark";
     newBookmarkElement.setAttribute("timestamp", bookmark.time);
 
-    setBookmarkAttributes("play", onPlay, controlsElement);
-    setBookmarkAttributes("delete", onDelete, controlsElement)
+    // setBookmarkAttributes("play", onPlay, controlsElement);
+    // setBookmarkAttributes("delete", onDelete, controlsElement)
+
+    setBookmarkAttributes("play", () => onPlay(bookmark.time), controlsElement);
+    // setBookmarkAttributes("delete", () => onDelete(bookmark.time), controlsElement);
+    //instead of this call...writing code here only for delete(deepseek ne bataya)
+    const deleteBtn = document.createElement("img");
+    deleteBtn.src = "assets/delete.png";
+    deleteBtn.title = "Delete";
+    deleteBtn.dataset.timestamp = bookmark.time; // Store timestamp in dataset
+    deleteBtn.addEventListener("click", (e) => {
+        const timestamp = e.target.dataset.timestamp;
+        onDelete(timestamp);
+    });
+    controlsElement.appendChild(deleteBtn);
 
     newBookmarkElement.appendChild(bookmarkTitleElement);
     newBookmarkElement.appendChild(controlsElement);
@@ -26,7 +39,11 @@ const addNewBookmark = (bookmarksElement, bookmark) => {
 //view bookamrks
 const viewBookmarks = (currentBookmarks = []) => {
     const bookmarksElement = document.getElementById("bookmarks")
-    bookmarksElement.innerHTML = "";
+    // bookmarksElement.innerHTML = "";
+    // ✅ Properly cleanup DOM (including event listeners)
+    while (bookmarksElement.firstChild) {
+        bookmarksElement.removeChild(bookmarksElement.firstChild);
+    }
     if (currentBookmarks.length > 0) {
         for (let i = 0; i < currentBookmarks.length; i++) {
             const bookmark = currentBookmarks[i];
@@ -39,38 +56,66 @@ const viewBookmarks = (currentBookmarks = []) => {
 }
 
 //on play
-const onPlay = async (e) => {
-    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+// const onPlay = async (e) => {
+//     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+//     const activeTab = await getActiveTab();
+
+//     chrome.tabs.sendMessage(activeTab.id, {
+//         type: "PLAY",
+//         value: bookmarkTime
+//     })
+// }
+
+
+//on delete
+// const onDelete = async (e) => {
+//     const activeTab = await getActiveTab();
+//     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+
+//     //try these from github clone repo
+//     // const elementToDelete = document.getElementById("bookmark-" + bookmarkTime);
+//     // elementToDelete.parentNode.removeChild(elementToDelete);
+
+//     // Send message to content script to delete the bookmark
+//     chrome.tabs.sendMessage(activeTab.id, {
+//         type: "DELETE",
+//         value: bookmarkTime
+//     }, (updatedBookmarks) => {
+//         // Update the view with the new bookmarks list
+//         requestAnimationFrame(() => {
+//             viewBookmarks(updatedBookmarks);
+
+//         })
+//     });
+// }
+
+
+const onPlay = async (bookmarkTime) => {
     const activeTab = await getActiveTab();
 
     chrome.tabs.sendMessage(activeTab.id, {
         type: "PLAY",
         value: bookmarkTime
-    })
-}
+    });
+};
 
-
-//on delete
-const onDelete = async (e) => {
+// popup.js - Updated onDelete
+const onDelete = async (bookmarkTime) => {
     const activeTab = await getActiveTab();
-    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-
-    //try these from github clone repo
-    // const elementToDelete = document.getElementById("bookmark-" + bookmarkTime);
-    // elementToDelete.parentNode.removeChild(elementToDelete);
-
-    // Send message to content script to delete the bookmark
+    const timeToDelete = Number(bookmarkTime); // Convert to number upfront
     chrome.tabs.sendMessage(activeTab.id, {
         type: "DELETE",
-        value: bookmarkTime
+        value: timeToDelete // Send as number
     }, (updatedBookmarks) => {
-        // Update the view with the new bookmarks list
         requestAnimationFrame(() => {
             viewBookmarks(updatedBookmarks);
-
-        })
+        });
     });
-}
+};
+
+
+
+
 
 
 //set bookmark attribute

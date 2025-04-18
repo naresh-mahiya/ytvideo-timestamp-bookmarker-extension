@@ -22,7 +22,7 @@
             // Convert both values to numbers for proper comparison
             const timeToDelete = Number(value);
             currentVideoBookmarks = currentVideoBookmarks.filter((b) => Number(b.time) !== timeToDelete);
-            chrome.storage.sync.set({[currentVideo]: JSON.stringify(currentVideoBookmarks)}, () => {
+            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) }, () => {
                 response(currentVideoBookmarks);
             });
             return true; // Keep the message channel open for the async response
@@ -60,9 +60,10 @@
             youtubePlayer = document.getElementsByClassName("video-stream")[0];
 
             //add that bookmark button
-            youtubeLeftControles.appendChild(bookmarkBtn);
-            bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
-
+            if (youtubeLeftControles && youtubePlayer) {
+                youtubeLeftControles.appendChild(bookmarkBtn);
+                bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+            }
 
         }
     }
