@@ -91,6 +91,15 @@ youtube-bookmark-extension/
 - `tabs` - To interact with YouTube tabs
 - `https://*.youtube.com/*` - To access YouTube videos
 
+## �� Known Issues
+
+- **Bookmark Deletion Bug**: 
+  - When deleting any bookmark (except the last one), two bookmarks get deleted:
+    - The selected bookmark
+    - The last bookmark in the list
+  - Deleting the last bookmark works as expected
+  - This is a known issue that needs to be fixed. Contributions to resolve this issue are welcome!
+
 ## 🤝 Contributing
 
 Suggestions and improvements are welcome! Feel free to fork the repo, make changes, and open a pull request.
