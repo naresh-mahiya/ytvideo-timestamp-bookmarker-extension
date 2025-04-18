@@ -13,7 +13,7 @@ A Chrome extension that allows you to bookmark specific timestamps in YouTube vi
 ## 📸 Screenshots
 
 <div align="center">
- <img src="screenshots/popup-view.png" alt="Extension Popup with Bookmarks" width="300"/>
+ <img src="screenshots/popup-view.png" alt="Extension Popup with Bookmarks" width="400" height="300"/>
   <p><em>Extension popup showing saved bookmarks</em></p>
   
   <img src="screenshots/bookmark-button.png" alt="Bookmark Button in YouTube Player" width="400"/>
